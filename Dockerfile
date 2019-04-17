@@ -61,8 +61,8 @@ RUN cd /opt/ \
 
 # Remove library
 RUN yum -y erase automake autoconf git make gcc gcc-c++ libpcap-devel pcre-devel libyaml-devel \
- && file-devel zlib-devel jansson-devel nss-devel libcap-ng-devel libnet-devel \
- && libnetfilter_queue-devel lua-devel gcc-c++ bzip2-devel readline-devel python-devel hiredis-devel
+   file-devel zlib-devel jansson-devel nss-devel libcap-ng-devel libnet-devel \
+   libnetfilter_queue-devel lua-devel gcc-c++ bzip2-devel readline-devel python-devel hiredis-devel
 
 RUN rm -rf /opt/{hyperscan,suricata-4.1.3,pcre-8.43,boost_1_70_0} \
  && yum -y clean all
