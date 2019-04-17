@@ -73,7 +73,7 @@ RUN chmod +x /docker-entrypoint.sh
 COPY suricata.yaml /etc/suricata/suricata.yaml
 
 RUN useradd -s /sbin/nologin suri \
- && chown -R suri:suri /var/run/suricata/ && \
+ && chown -R suri:suri /var/run/suricata/ \
  && chown -R suri:suri /var/log/suricata/
 
 ENV CHART_PREFIX=suricata
