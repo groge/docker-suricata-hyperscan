@@ -48,7 +48,12 @@ RUN cd /opt/ \
  && cd /opt/hyperscan/build \
  && cmake -DCMAKE_INSTALL_PREFIX:PATH=/opt/hyperscan -DBUILD_STATIC_AND_SHARED=1 -DBOOST_ROOT=/opt/boost_1_70_0/ ../ \
  && make \
- && make install 
+ && make install \
+ && echo "/opt/hyperscan/lib64" >> /etc/ld.so.conf.d/hs.conf \
+ && ldconfig \
+ && echo "LD_LIBRARY_PATH=/opt/hyperscan/lib64:\$LD_LIBRARY_PATH" >> /etc/profile \
+ && echo "export LD_LIBRARY_PATH" >> /etc/profile \
+ && source /etc/profile
     
 RUN cd /opt/ \
  && wget https://www.openinfosecfoundation.org/download/suricata-4.1.3.tar.gz \
@@ -56,7 +61,7 @@ RUN cd /opt/ \
  && cd /opt/suricata-4.1.3/ \
  && ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --enable-nfqueue --enable-lua --with-libhs-libraries=/opt/hyperscan/lib64/ --with-libhs-includes=/opt/hyperscan/include/hs/ --enable-hiredis \
  && make \
- && make install\
+ && make install \
  && ldconfig
 
 # Remove library
@@ -64,18 +69,18 @@ RUN yum -y erase automake autoconf git make gcc gcc-c++ libpcap-devel pcre-devel
    file-devel zlib-devel jansson-devel nss-devel libcap-ng-devel libnet-devel \
    libnetfilter_queue-devel lua-devel gcc-c++ bzip2-devel readline-devel python-devel hiredis-devel
 
-RUN rm -rf /opt/{hyperscan,suricata-4.1.3,pcre-8.43,boost_1_70_0} \
- && yum -y clean all
+#RUN rm -rf /opt/{hyperscan,suricata-4.1.3,pcre-8.43,boost_1_70_0}
+RUN yum -y clean all
 
 # COPY file needed for the Suricata efficiency
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 COPY suricata.yaml /etc/suricata/suricata.yaml
 
-RUN useradd -s /sbin/nologin suri \
- && chown -R suri:suri /var/run/suricata/ \
- && chown -R suri:suri /var/log/suricata/
+# RUN useradd -s /sbin/nologin suri \
+# && chown -R suri:suri /var/run/suricata/ \
+# && chown -R suri:suri /var/log/suricata/
+# ENV CHART_PREFIX=suricata
 
-ENV CHART_PREFIX=suricata
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
